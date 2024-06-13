@@ -8,7 +8,12 @@ const boardSquareStyles = {
 }
 
 function Square({isWhite, piece=null, isSelected=false, isValidDestination=false, onClick}) {
-    let backgroundColor = isWhite ? "#fff8dc" : "#cdaa7d";
+    let backgroundColor;
+    if(isSelected || isValidDestination) {
+        backgroundColor = '#FFFF6E';
+    } else {
+        backgroundColor = isWhite ? "#fff8dc" : "#cdaa7d";
+    }
     return(
         <div className="square" style={Object.assign({}, boardSquareStyles, {backgroundColor})} onClick={onClick}>
             {piece}

@@ -14,13 +14,15 @@ const boardStyle = {
 	height: '100%'
 }
 
-function Board({squares, selectedSquare=null, availableDestinations, onClick}){
+function Board({squares, selectedSquare=[], availableDestinations, onClick}){
     let renderSquare = ({isWhite, piece, pos}) => {
         return <div style={rowStyle}>
                 <Square
                     isWhite={isWhite}
                     piece={piece}
+                    isSelected={selectedSquare.toString()==pos.toString()}
                     onClick={() => onClick(pos)}
+                    isValidDestination={availableDestinations.some(e=>e.toString()==pos.toString())}
                 />
                </div>
     };
