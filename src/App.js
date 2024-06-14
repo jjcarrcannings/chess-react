@@ -3,6 +3,7 @@ import './App.css';
 import Board from './components/board'
 import { useState } from 'react';
 import { PIECES } from './constants/pieces';
+import { cloneDeep } from 'lodash';
 
 const appStyle = {
   height: '49vw',
@@ -85,9 +86,24 @@ function App() {
   let isSquareEmpty = (pos) => currentSquares[pos[0]][pos[1]] == null;
 
   let executeMove = (posFrom, posTo) => {
-    movingPiece = currentSquares[posFrom[0]][posFrom[1]];
-    
+    const movingPiece = currentSquares[posFrom[0]][posFrom[1]];
+    const isWhite = isPieceWhite(movingPiece);
+    if(isSquareEmpty(posTo)) {
+      const newSquares = cloneDeep(currentSquares);
+      newSquares[posFrom[0]][posFrom[1]] = null;
+      newSquares[posTo[0]][posTo[1]] = movingPiece;
+      setSquares(newSquares);
+      return;
+      // TODO: Pawn promotion, castling, and en passant
+    }
   };
+
+  let endTurn = () => {
+    setAvailableDestinations([]);
+    setPieceSelected([]);
+    setIsWhiteTurn(!isWhiteTurn);
+    return;
+  }
 
   // Config
   const pieceConfig = {
