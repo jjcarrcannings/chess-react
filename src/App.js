@@ -20,7 +20,7 @@ function App() {
     [null,null,null,null,null,null,null,null],
     [null,null,null,null,null,null,null,null],
     [null,null,null,null,null,null,null,null],
-    [null,'♟',null,null,null,null,null,null],
+    [null,null,null,null,null,null,null,null],
     ['♙','♙','♙','♙','♙','♙','♙','♙'],
     ['♖','♘','♗','♕','♔','♗','♘','♖'],
   ];
@@ -50,7 +50,8 @@ function App() {
 
   let calculateAvailableDestinations = pos => {
     const piece = currentSquares[pos[0]][pos[1]];
-    let destinations = pieceConfig[piece].getValidDestinations(pos,isPieceWhite(piece));
+    let destinations = pieceConfig[piece].getValidDestinations(pos,isPieceWhite(piece))
+                                          .filter((move)=>!isKingInCheckIfMove(move,isPieceWhite(piece)));
     return destinations;
   }
 
@@ -73,6 +74,30 @@ function App() {
     return validMoves;
   }
 
+  let getValidRookDestinations = (pos, isWhite) => {
+    let validMoves = [];
+    for(let moveDirection of [[-1,0],[0,-1],[1,0],[0,1]]){
+      let currentMove = moveDirection.map((e,i)=>e+pos[i]);
+      while(isOnBoard(currentMove)){
+        if(isSquareEmpty(currentMove)){
+          validMoves.push(currentMove);
+        } else if(isSquareOccupiedSameColour(currentMove,isWhite)){ 
+          break;
+        } else{
+          validMoves.push(currentMove);
+          break;
+        }
+        currentMove = moveDirection.map((e,i)=>e+currentMove[i]);
+      }
+    }
+    return validMoves.filter((move) => !isKingInCheckIfMove(move, isWhite));
+  }
+
+  let isKingInCheckIfMove = (posTo, isWhite) => {
+    // TODO: Add logic
+    return false;
+  }
+
   let isPieceWhite = (piece) => piece.charCodeAt(0) <= 0x2659;
 
   let isOnBoard = pos => pos[0] >= 0 && pos[0] < 8 && pos[1] >= 0 && pos[1] < 8 ;
@@ -88,13 +113,20 @@ function App() {
   let executeMove = (posFrom, posTo) => {
     const movingPiece = currentSquares[posFrom[0]][posFrom[1]];
     const isWhite = isPieceWhite(movingPiece);
-    if(isSquareEmpty(posTo)) {
+    if(isSquareEmpty(posTo)) { // Move to open square
       const newSquares = cloneDeep(currentSquares);
       newSquares[posFrom[0]][posFrom[1]] = null;
       newSquares[posTo[0]][posTo[1]] = movingPiece;
       setSquares(newSquares);
-      return;
       // TODO: Pawn promotion, castling, and en passant
+      return;
+    } else if (isSquareOccupiedOppositeColour(posTo, isWhite)) { // Capture move
+      const newSquares = cloneDeep(currentSquares);
+      newSquares[posFrom[0]][posFrom[1]] = null;
+      newSquares[posTo[0]][posTo[1]] = movingPiece;
+      setSquares(newSquares);
+      // TODO: Possibly combine with other move logic above
+      return;
     }
   };
 
@@ -111,7 +143,7 @@ function App() {
       getValidDestinations: getValidPawnDestinations,
     },
     [PIECES.WHITE_ROOK]: {
-
+      getValidDestinations: getValidRookDestinations,
     },
     [PIECES.WHITE_KNIGHT]: {
 
@@ -129,7 +161,7 @@ function App() {
       getValidDestinations: getValidPawnDestinations
     },
     [PIECES.BLACK_ROOK]: {
-
+      getValidDestinations: getValidRookDestinations,
     },
     [PIECES.BLACK_KNIGHT]: {
 
