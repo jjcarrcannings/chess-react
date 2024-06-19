@@ -7,9 +7,9 @@ const boardSquareStyles = {
     alignItems: 'center',
 }
 
-function Square({isWhite, piece=null, isSelected=false, isValidDestination=false, onClick}) {
+function Square({isWhite, piece=null, isSelected=false, isValidDestination=false, onClick, mostRecentMove}) {
     let backgroundColor;
-    if(isSelected || isValidDestination) {
+    if(isSelected || mostRecentMove) {
         backgroundColor = '#FFFF6E';
     } else {
         backgroundColor = isWhite ? "#fff8dc" : "#cdaa7d";

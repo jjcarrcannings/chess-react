@@ -14,7 +14,7 @@ const boardStyle = {
 	height: '100%'
 }
 
-function Board({squares, selectedSquare=[], availableDestinations, onClick}){
+function Board({squares, selectedSquare=[], availableDestinations, onClick, mostRecentMove}){
     let renderSquare = ({isWhite, piece, pos}) => {
         return <div style={rowStyle}>
                 <Square
@@ -23,6 +23,7 @@ function Board({squares, selectedSquare=[], availableDestinations, onClick}){
                     isSelected={selectedSquare.toString()==pos.toString()}
                     onClick={() => onClick(pos)}
                     isValidDestination={availableDestinations.some(e=>e.toString()==pos.toString())}
+                    mostRecentMove={mostRecentMove.some(e=>e.toString()==pos.toString())}
                 />
                </div>
     };
