@@ -16,8 +16,9 @@ const boardStyle = {
 
 function Board({squares, selectedSquare=[], availableDestinations, onClick, mostRecentMove}){
     let renderSquare = ({isWhite, piece, pos}) => {
-        return <div style={rowStyle}>
+        return <div style={rowStyle} className="square">
                 <Square
+                    pos={pos}
                     isWhite={isWhite}
                     piece={piece}
                     isSelected={selectedSquare.toString()==pos.toString()}

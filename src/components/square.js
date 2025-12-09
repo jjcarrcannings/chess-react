@@ -1,3 +1,5 @@
+import '../styles/square.css'
+
 const boardSquareStyles = {
     aspectRatio: '1/1',
     width: '100%',
@@ -5,9 +7,10 @@ const boardSquareStyles = {
     fontSize: '5vw',
     justifyContent: 'center',
     alignItems: 'center',
+    position: 'relative'
 }
 
-function Square({isWhite, piece=null, isSelected=false, isValidDestination=false, onClick, mostRecentMove}) {
+function Square({pos, isWhite, piece=null, isSelected=false, isValidDestination=false, onClick, mostRecentMove}) {
     let backgroundColor;
     if(isSelected || mostRecentMove) {
         backgroundColor = '#FFFF6E';
@@ -16,7 +19,12 @@ function Square({isWhite, piece=null, isSelected=false, isValidDestination=false
     }
     return(
         <div className="square" style={Object.assign({}, boardSquareStyles, {backgroundColor})} onClick={onClick}>
-            {piece}
+            <div className="square__available-destination">
+                {isValidDestination ? "•" : null}      
+            </div>
+            <div className="square__piece">
+                {piece}
+            </div>
         </div>
     )
 }
