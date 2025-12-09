@@ -46,6 +46,7 @@ function App() {
       setSquares(newSquares);
       setMostRecentMove([pieceSelected, pos]);
       updateCastleConditions(pos);
+      checkForEndOfGame(newSquares);
       endTurn();
     } else{ // Invalid click
       setPieceSelected([]);
@@ -107,9 +108,8 @@ function App() {
 
   let getValidKnightDestinations = (pos, isWhite, squares=currentSquares) => {
     const jumps = [[-2,-1],[-2,1],[-1,2],[1,2],[2,1],[2,-1],[1,-2],[-1,-2]];
-    let validMoves = jumps.map( (jump,i) => jump.map( (e,j) => e + pos[j] ) )
+    return jumps.map( (jump,i) => jump.map( (e,j) => e + pos[j] ) )
                       .filter((move) => isOnBoard(move) && !isSquareOccupiedSameColour(move, isWhite, squares));
-    return validMoves;
   }
 
   let getValidBishopDestinations = (pos, isWhite, squares=currentSquares) => {
@@ -215,8 +215,7 @@ function App() {
   let isCheckByColour = (squares=currentSquares, isWhite) => {
     const attackedSquares = getAllPieceDestinationsForColour(isWhite, squares);
     const kingPos = findKing(!isWhite, squares);
-    const result = attackedSquares.some((square) => square.toString() == kingPos.toString());
-    return result;
+    return attackedSquares.some((square) => square.toString() == kingPos.toString());
   }
 
   let findKing = (isWhite, squares=currentSquares) => {
@@ -280,6 +279,9 @@ function App() {
     const y_dir = isWhite ? -1 : 1;
     const x_dir = isLeft ? -1 : 1;
     const valid_row = isWhite ? 3 : 4;
+    if(mostRecentMove.length === 0){
+      return false;
+    }
     if(pos[0]==valid_row && isOnBoard([pos[0],pos[1]+x_dir]) && mostRecentMove[0][0]==pos[0]+(y_dir*2)
         && mostRecentMove[0][1]==pos[1]+x_dir && mostRecentMove[1][0]==pos[0] && mostRecentMove[1][1]==pos[1]+x_dir){
       return true;
@@ -320,6 +322,45 @@ function App() {
     }
     return newSquares;
   };
+
+  let getPiecesbyColour = (squares=currentSquares, isWhite) => {
+    const pieces = [];
+    for(let i=0; i<8; i++){
+      for(let j=0; j<8; j++){
+        const piece = squares[i][j];
+        if(piece && isPieceWhite(piece)==isWhite){
+          pieces.push([i,j]);
+        }
+      }
+    }
+    return pieces;
+  };
+
+  let isCheckmateforColour = (squares=currentSquares, isWhite) => {
+    let oppPieces = getPiecesbyColour(squares, !isWhite);
+    const moves = oppPieces.map((piece) => calculateAvailableDestinations(piece, squares)).flat(1);
+    console.log(moves);
+    return moves.length === 0;
+  };
+
+  let isDraw = (squares=currentSquares) => {
+
+  };
+
+  let endGame = () => {
+
+  };
+
+  let checkForEndOfGame = (squares=currentSquares) => {
+    if(isCheckmateforColour(squares, isWhiteTurn)){
+      console.log('Checkmate! %s wins!', isWhiteTurn?'White':'Black');
+      endGame();
+    }
+    else if(isDraw(squares)){
+      console.log("It's a draw! Good game.");
+      endGame();
+    }
+  }
 
   let endTurn = () => {
     setAvailableDestinations([]);
